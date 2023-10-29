@@ -14,7 +14,9 @@ use walkdir::WalkDir;
 
 #[derive(Debug, Clone)]
 struct Lexer<'a> {
-    content: &'a [char],
+    content: &'a [char], //lifetime 'a is needed for the whole struct
+                         //when it has a field with a ref like this. the struct cannot outlive its reference
+                         //the special lifetime 'static means a whole program lifetime
 }
 
 impl<'a> Lexer<'a> {
@@ -22,13 +24,27 @@ impl<'a> Lexer<'a> {
         Self { content }
     }
     fn trim_left(&mut self) -> &'a [char] {
-        while self.content.len() > 0 && self.content[0].is_whitespace() {
+        //trim the blank space at the left of a token
+        while self.content.len() > 0
+            && (self.content[0].is_whitespace() || self.content[0].is_ascii_punctuation())
+        {
             self.content = &self.content[1..];
         }
         self.content
     }
+    fn trim_ascii_space(&mut self) -> &'a [char] {
+        let mut n = 0;
+        while n < self.content.len() && self.content[0].is_ascii_punctuation() {
+            self.content = &self.content[1..];
+            n += 1;
+            // todo!("trim_ascii_space not IMPLEMENTED")
+        }
+        return self.content;
+    }
+
     fn next_token(&mut self) -> Option<&'a [char]> {
         self.trim_left();
+        self.trim_ascii_space();
         if self.content.len() == 0 {
             return None;
         }
@@ -36,12 +52,26 @@ impl<'a> Lexer<'a> {
             let mut n = 0;
             while n < self.content.len() && self.content[n].is_alphanumeric() {
                 n += 1;
+                //accepts words like test123 or mom543 but not 10th
             }
             let token = &self.content[0..n];
             self.content = &self.content[n..];
             return Some(token);
         }
-        let token = &self.content[0..1];
+        if self.content[0].is_alphanumeric() {
+            //tokenize numbers 442122 or also A12323
+            let mut i = 0;
+            while i < self.content.len() && !self.content[i].is_ascii_whitespace() {
+                i += 1; //
+            }
+            let token = &self.content[0..i];
+            self.content = &self.content[i..];
+            return Some(token);
+        }
+        // if self.content[0].is_ascii_punctuation() || self.content[0].is_ascii_whitespace() {
+        //     self.content = &self.content[1..];
+        // }
+        let token = &self.content[0..1]; //for all other characters
         self.content = &self.content[1..];
         return Some(token);
     }
@@ -110,13 +140,15 @@ fn parse_pdf_file(path: &str) {
             if let Some(content) = page.get_text() {
                 let char_vec = &content.chars().collect::<Vec<char>>();
                 for token in Lexer::new(&char_vec) {
-                    println!("{:?}", token.iter().collect::<String>());
+                    // println!("Content: {content}\nSplit Content:{char_vec:?}");
+                    println!("\nTOKEN: {token:?}");
+                    println!("=> {:?}", token.iter().collect::<String>());
                 }
                 contents.push_str(content);
                 // println!("{content:?}")
                 let page_n = i + 1;
                 println!(
-                    "file:{path}, page {page_n}/{n_pages} => size:{size}",
+                    "contents: {contents}, file:{path}, page {page_n}/{n_pages} => size:{size}",
                     size = format_size(content.len())
                 );
             }
@@ -144,7 +176,7 @@ fn format_size(size: usize) -> String {
 }
 
 fn main() {
-    let _ = walk_dir("docs/");
+    let _ = walk_dir("docs/numbers.pdf");
     // let all_docs = HashMap::<Path, HashMap<String, usize>>::new();
     // let file_path = "docs/cours2.pdf";
     // parse_pdf_file(file_path);
