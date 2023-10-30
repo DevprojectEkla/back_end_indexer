@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 poppler = "0.3.2"
 walkdir = "2.4.0"
+xml-rs = "0.8.19"
