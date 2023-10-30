@@ -2,6 +2,7 @@ use core::time;
 use std::{
     collections::HashMap,
     ffi::OsStr,
+    fmt::Display,
     fs::{self, metadata, DirEntry, File, Metadata, ReadDir},
     io::{Result, Write},
     path::{Path, PathBuf},
@@ -104,10 +105,13 @@ impl<'a> Iterator for Lexer<'a> {
 ///cette fonction est typiquement appelée avec comme argument walk_dir(path) qui retourne un Vec<String> et permet d'indexer tous les fichiers
 fn index_all(list_path: Vec<String>) -> () {
     let mut n = 1;
+    let mut index_doc = &mut IndexDoc::new();
+
     for path in list_path {
         let content = check_file_type_and_send_to_parser(path.as_str());
         println!("Indexing {path}...");
-        let index = index_document(&content);
+        let tf = index_document(&content);
+        let tf_clone = tf.clone();
         let file_name = Path::new(&path)
             .file_stem()
             .expect("there should be a stem to this path")
@@ -123,7 +127,9 @@ fn index_all(list_path: Vec<String>) -> () {
         //     .split(".")
         //     .collect::<Vec<&str>>()[0]
         //     .to_string();
-        tf_to_json(index, file_name);
+        tf_to_json(tf_clone, file_name);
+        tf_to_index(PathBuf::from(path), tf, index_doc);
+        index_to_json(index_doc.clone());
         n += 1;
         // println!("content:{content:?}\nindex: {index:?} ");
     }
@@ -133,8 +139,24 @@ fn index_all(list_path: Vec<String>) -> () {
 ///type de fichier. Elle utilise le Lexer pour générer les token des différents termes du document
 ///et utilise un HashMap (~un dictionnaire) pour stocker les données (terme ,fréquence) pour chaque token. Elle est aussi responsable du calcul de la fréquence des terme. TODO: faire une fonction distincte pour cette dernière opération?
 
-fn sort_hashmap<K, V>(hashmap: HashMap<K, V>) -> Vec<(String, usize)> {
-    todo!()
+fn sort_hashmap<'a, 'b, K, V, F>(hashmap: &'a HashMap<K, V>, mut sort_method: F) -> Vec<(&K, &V)>
+where
+    K: std::fmt::Debug + Display,
+    V: std::fmt::Debug + Display,
+    F: FnMut(Vec<(&'a K, &'a V)>) -> Vec<(&'a K, &'a V)>,
+{
+    let mut stats = hashmap.into_iter().collect::<Vec<_>>(); // returns [("key1", value1),...,]
+    sort_method(stats.clone());
+    //unstable_by_key(|x| (*x).1);
+    stats.reverse();
+    stats
+}
+fn sort_index(index: &IndexDoc) -> Vec<(&PathBuf, &TermFreq)> {
+    let mut stats = index.into_iter().collect::<Vec<_>>(); // returns [("key1", value1),...,]
+    stats.sort_by_key(|(k, _)| *k);
+    //unstable_by_key(|x| (*x).1);
+    stats.reverse();
+    stats
 }
 
 fn sort_tf_hashmap(hashmap: &TermFreq) -> Vec<(&String, &usize)> {
@@ -305,13 +327,12 @@ fn format_size(size: usize) -> String {
         format!("{:.2} TB", size as f64 / TB)
     }
 }
-fn tf_to_index(path: PathBuf, tf: TermFreq) -> IndexDoc {
-    let mut index_doc = IndexDoc::new();
+fn tf_to_index(path: PathBuf, tf: TermFreq, index_doc: &mut IndexDoc) -> &mut IndexDoc {
     index_doc.insert(path, tf);
     index_doc
 }
 fn index_to_json(index: IndexDoc) {
-    todo!()
+    hashmap_to_json(&index, "index", sort_index)
 }
 fn tf_to_json(tf: TermFreq, file_stem: &str) {
     hashmap_to_json(&tf, file_stem, sort_tf_hashmap);
@@ -320,7 +341,7 @@ fn hashmap_to_json<K, V, F>(hashmap: &HashMap<K, V>, name: &str, mut sort_functi
 where
     K: std::fmt::Debug,
     V: std::fmt::Debug,
-    F: FnMut(&HashMap<K, V>) -> Vec<(&String, &usize)>,
+    F: FnMut(&HashMap<K, V>) -> Vec<(&K, &V)>,
 {
     // let mut data = <Vec<_>>::new();
     let data = sort_function(hashmap);
