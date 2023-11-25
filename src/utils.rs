@@ -1,7 +1,24 @@
 use std::path::PathBuf;
+use std::process::Command;
 
 //extern crate to browse an entire tree of directories
 use walkdir::WalkDir;
+
+enum Test {
+    Test1,
+    Test2,
+    Test3,
+}
+
+enum Option {
+    Some(String),
+    None,
+}
+
+enum Result {
+    Ok(),
+    Err(),
+}
 
 /// this is the function that iterate on each directory to retrieve all files of the whole tree
 /// starting from path which should logically but not necessarily be a path to a directory. On each
@@ -11,9 +28,7 @@ pub fn walk_dir(path: &str) -> Vec<String> {
     let mut n_files = 1;
     let mut list_path: Vec<String> = Vec::new();
     for entry in WalkDir::new(path) {
-        let entry = entry
-            .expect("WalkDir doit bien donner une valeur pour entry")
-            .clone();
+        let entry = entry.expect("WalkDir doit bien donner une valeur pour entry");
         if entry.path().is_file() {
             let path_to_file = entry.path().to_str().expect("should match");
             list_path.push(path_to_file.to_string());
