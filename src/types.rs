@@ -5,7 +5,17 @@ pub type TermFreq = HashMap<String, usize>;
 pub type PseudoHash = Vec<(String, usize)>;
 pub type IndexDoc = HashMap<PathBuf, PseudoHash>;
 pub type SliceChars = Vec<char>;
+pub type VecStr<'a> = Vec<&'a str>;
 pub type SliceBytes = Vec<u8>;
+pub enum IndexType {
+    IndexDoc,
+    TermFreq,
+    PseudoHash,
+}
+#[derive(Debug)]
+pub enum VecRefStr<'a> {
+    VecStr(VecStr<'a>),
+}
 pub enum SliceContent {
     SliceChars(SliceChars),
     SliceBytes(SliceBytes),
@@ -44,3 +54,21 @@ impl<K, V, W, Z> IsVecOfTuples<K, V, W, Z> for HashMap<K, V> {
         true
     }
 }
+impl<'a> FromIterator<&'a str> for VecRefStr<'a> {
+    fn from_iter<VecStr>(iter: VecStr) -> Self
+    where
+        VecStr: IntoIterator<Item = &'a str>,
+    {
+        let mut vec = Vec::new();
+        for item in iter {
+            vec.push(item);
+        }
+        VecRefStr::VecStr(vec)
+    }
+}
+
+// impl Clone for PseudoHash {
+//     fn clone(&self) -> Self {
+//         self.iter().map(|(s, usize)| (s.clone(), *usize).collect())
+//     }
+// }

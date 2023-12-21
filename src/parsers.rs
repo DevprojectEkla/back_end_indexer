@@ -18,9 +18,10 @@ pub fn check_file_type(path: &str) -> &OsStr {
     }
 }
 
-pub fn send_to_parser(path: &str, extension: &OsStr) -> SliceContent {
+pub fn send_to_parser(path: &str) -> SliceContent {
     //.extension() returns an Enum Option (None, Some)
-    let extension = extension.to_str();
+
+    let extension = check_file_type(path).to_str();
     match extension {
         Some("pdf") => parse_pdf_file(path),
         Some("xml") | Some("xhtml") => parse_xml_file(path),

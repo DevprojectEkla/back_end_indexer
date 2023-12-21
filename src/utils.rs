@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use std::process::Command;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 //extern crate to browse an entire tree of directories
 use walkdir::WalkDir;
@@ -43,7 +44,7 @@ pub fn walk_dir(path: &str) -> Vec<String> {
             // thread::sleep(pause);
         }
     }
-    println!("number of file:  {n_files} ");
+    println!("number of file:  {} ", n_files);
     list_path
 }
 
@@ -52,6 +53,16 @@ pub fn walk_dir(path: &str) -> Vec<String> {
 
 //     Ok(meta)
 // }
+
+pub fn generate_uid() -> String {
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Judgment Day has arrived")
+        .as_micros();
+    let random_number: u64 = rand::random();
+    let id = format!("{}-{}", timestamp, random_number);
+    id
+}
 
 pub fn format_size(size: usize) -> String {
     const KB: f64 = 1024.0;

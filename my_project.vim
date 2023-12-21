@@ -13,10 +13,9 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +17 src/main.rs
-badd +13 src/types.rs
-badd +1 src/utils.rs
-badd +65 src/index.rs
+badd +21 src/types.rs
+badd +47 src/utils.rs
+badd +52 src/index.rs
 argglobal
 %argdel
 $argadd src/main.rs
@@ -24,11 +23,9 @@ set stal=2
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
-tabnew +setlocal\ bufhidden=wipe
 tabrewind
 edit src/index.rs
 argglobal
-balt src/main.rs
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -39,14 +36,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 52 - ((0 * winheight(0) + 16) / 33)
+let s:l = 52 - ((1 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 52
 normal! 042|
 tabnext
-edit src/main.rs
+edit src/utils.rs
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -58,12 +55,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 17 - ((14 * winheight(0) + 16) / 33)
+let s:l = 42 - ((32 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 17
-normal! 013|
+keepjumps 42
+normal! 019|
 tabnext
 edit src/types.rs
 argglobal
@@ -77,7 +74,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 32 - ((31 * winheight(0) + 16) / 33)
+let s:l = 32 - ((30 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -102,26 +99,7 @@ keepjumps exe s:l
 normal! zt
 keepjumps 7
 normal! 0
-tabnext
-edit src/types.rs
-argglobal
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let &fdl = &fdl
-let s:l = 21 - ((17 * winheight(0) + 16) / 33)
-if s:l < 1 | let s:l = 1 | endif
-keepjumps exe s:l
-normal! zt
-keepjumps 21
-normal! 09|
-tabnext 5
+tabnext 3
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

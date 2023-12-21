@@ -1,12 +1,12 @@
 extern crate serde;
 extern crate xml;
 // use core::time;
-mod hashmaps;
-mod index;
-mod lexer;
-mod parsers;
-mod types;
-mod utils;
+pub mod hashmaps;
+pub mod index;
+pub mod lexer;
+pub mod parsers;
+pub mod types;
+pub mod utils;
 use index::index_all;
 use utils::walk_dir;
 

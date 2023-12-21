@@ -41,8 +41,7 @@ pub fn index_all(list_path: Vec<String>) -> () {
     let index = &mut IndexDoc::new();
 
     for path in list_path {
-        let extension = check_file_type(path.as_str());
-        let content = send_to_parser(path.as_str(), extension);
+        let content = send_to_parser(path.as_str());
 
         match content {
             SliceContent::SliceChars(chars) => {
@@ -75,3 +74,5 @@ fn index_document(content: &SliceChars) -> TermFreq {
     }
     return tf;
 }
+
+fn tf_calculation(tf: TermFreq) {}
