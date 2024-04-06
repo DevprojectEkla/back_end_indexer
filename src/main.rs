@@ -7,14 +7,16 @@ mod lexer;
 mod parsers;
 mod types;
 mod utils;
-use index::index_all;
+use index::Index;
 use utils::walk_dir;
-
 pub fn main() {
     // let content = parse_xml_file("xml/docs.gl/gl4/glActiveShaderProgram.xhtml");
     // println!("{content:?}");
     let list_files = walk_dir("docs/samples");
-    index_all(list_files);
+
+    let mut index = Index::new(list_files);
+
+    index.index_all();
 
     // thread::sleep(Duration::from_secs(1));
     // let file = File::open("xml/docs.gl/gl4/glActiveTexture.xhtml").expect("Failed to open file");

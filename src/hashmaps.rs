@@ -11,9 +11,10 @@ impl<K, V> Index<K, V> {
     }
 }
 pub fn tf_to_index(path: PathBuf, tf: TermFreq, index_doc: &mut IndexDoc) -> &mut IndexDoc {
-    let sorted = sort_tf_for_index(tf);
+    // let sorted = sort_tf_for_index(tf);
     // println!("{:?}", sorted);
-    index_doc.insert(path, sorted);
+    index_doc.insert(path, tf);
+    println!("{:?}", index_doc);
     index_doc
 }
 pub fn index_to_json(index: IndexDoc) {
@@ -45,7 +46,8 @@ where
     F: FnMut(HashMap<K, V>) -> Vec<(K, V)>,
 {
     // let mut data = <Vec<_>>::new();
-    let data = sort_function(hashmap);
+    // let data = sort_function(hashmap);
+    let data = hashmap;
 
     // let json_format = format!(
     //     r#"{{{}}}
@@ -70,15 +72,15 @@ fn hashmap_into_vec<K, V>(hashmap: HashMap<K, V>) -> Vec<(K, V)> {
     hashmap.into_iter().collect::<Vec<_>>()
 }
 
-fn sort_index(index: IndexDoc) -> Vec<(PathBuf, PseudoHash)> {
+fn sort_index(index: IndexDoc) -> Vec<(PathBuf, TermFreq)> {
     let mut stats = hashmap_into_vec(index);
-    stats.sort_by(|a, b| a.cmp(b));
+    stats.sort_by_key(|(a, _)| a.clone());
     //unstable_by_key(|x| (*x).1);
     stats
 }
 fn sort_tf_for_index(hashmap: TermFreq) -> PseudoHash {
     let mut stats = hashmap_into_vec(hashmap);
-    stats.sort_by_key(|(_, freq)| *freq);
+    stats.sort_by_key(|(_, freq)| *freq as usize);
     stats.reverse();
     stats
 }

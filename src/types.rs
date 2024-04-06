@@ -1,9 +1,10 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{cell::RefCell, collections::HashMap, path::PathBuf, rc::Rc};
 
 ///Ces types servent seulement à éviter des répétitions un peu lourde de generic types
-pub type TermFreq = HashMap<String, usize>;
-pub type PseudoHash = Vec<(String, usize)>;
-pub type IndexDoc = HashMap<PathBuf, PseudoHash>;
+pub type TermFreq = HashMap<String, f32>;
+pub type PseudoHash = Vec<(String, f32)>;
+pub type IndexDoc = HashMap<PathBuf, TermFreq>;
+pub type TfIdF = HashMap<PathBuf, f32>;
 pub type SliceChars = Vec<char>;
 pub type VecStr<'a> = Vec<&'a str>;
 pub type SliceBytes = Vec<u8>;
@@ -67,6 +68,23 @@ impl<'a> FromIterator<&'a str> for VecRefStr<'a> {
     }
 }
 
+pub trait WrapInRcRefCell: Clone {
+    fn wrap_in_rc_refcell_as_ref(&self) -> Rc<RefCell<&Self>> {
+        Rc::new(RefCell::new(&self))
+    }
+    fn wrap_in_rc_refcell(&self) -> Rc<RefCell<&Self>> {
+        Rc::new(RefCell::new(self))
+    }
+
+    fn wrap_and_clone(&self) -> Rc<RefCell<Self>> {
+        Rc::new(RefCell::new(self.clone()))
+    }
+    fn tuple_clones_wrap_and_self(&self) -> (Rc<RefCell<Self>>, Self) {
+        (self.wrap_and_clone(), self.clone())
+    }
+}
+
+impl<T: Clone> WrapInRcRefCell for T {}
 // impl Clone for PseudoHash {
 //     fn clone(&self) -> Self {
 //         self.iter().map(|(s, usize)| (s.clone(), *usize).collect())

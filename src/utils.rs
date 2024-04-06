@@ -1,26 +1,10 @@
+use std::cell::RefCell;
 use std::path::PathBuf;
-use std::process::Command;
+use std::rc::Rc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 //extern crate to browse an entire tree of directories
 use walkdir::WalkDir;
-
-enum Test {
-    Test1,
-    Test2,
-    Test3,
-}
-
-enum Option {
-    Some(String),
-    None,
-}
-
-enum Result {
-    Ok(),
-    Err(),
-}
-
 /// this is the function that iterate on each directory to retrieve all files of the whole tree
 /// starting from path which should logically but not necessarily be a path to a directory. On each
 /// files it calls the function that will check the extension and send the path file to the parser
@@ -46,6 +30,10 @@ pub fn walk_dir(path: &str) -> Vec<String> {
     }
     println!("number of file:  {} ", n_files);
     list_path
+}
+
+pub fn wrap_in_rc_ref_cell<T>(variable: T) -> Rc<RefCell<T>> {
+    Rc::new(RefCell::new(variable))
 }
 
 // fn check_is_dir(path_dir: &Path) -> Result<bool> {

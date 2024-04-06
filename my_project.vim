@@ -13,9 +13,11 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +21 src/types.rs
-badd +47 src/utils.rs
-badd +52 src/index.rs
+badd +55 src/types.rs
+badd +61 src/index.rs
+badd +19 src/main.rs
+badd +20 src/lib.rs
+badd +16 src/hashmaps.rs
 argglobal
 %argdel
 $argadd src/main.rs
@@ -23,9 +25,11 @@ set stal=2
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
+tabnew +setlocal\ bufhidden=wipe
 tabrewind
-edit src/index.rs
+edit src/hashmaps.rs
 argglobal
+balt src/types.rs
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -36,14 +40,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 52 - ((1 * winheight(0) + 16) / 33)
+let s:l = 35 - ((13 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 52
-normal! 042|
+keepjumps 35
+normal! 014|
 tabnext
-edit src/utils.rs
+edit src/lib.rs
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -55,12 +59,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 42 - ((32 * winheight(0) + 16) / 33)
+let s:l = 20 - ((19 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 42
-normal! 019|
+keepjumps 20
+normal! 021|
 tabnext
 edit src/types.rs
 argglobal
@@ -74,14 +78,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 32 - ((30 * winheight(0) + 16) / 33)
+let s:l = 38 - ((35 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 32
+keepjumps 38
 normal! 0
 tabnext
-edit src/utils.rs
+edit src/index.rs
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -93,13 +97,32 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 7 - ((6 * winheight(0) + 16) / 33)
+let s:l = 33 - ((32 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 7
-normal! 0
-tabnext 3
+keepjumps 33
+normal! 025|
+tabnext
+edit src/main.rs
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 19 - ((18 * winheight(0) + 18) / 37)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 19
+normal! 021|
+tabnext 1
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
