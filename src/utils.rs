@@ -1,8 +1,8 @@
 use std::cell::RefCell;
+use std::fs;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::{SystemTime, UNIX_EPOCH};
-
 //extern crate to browse an entire tree of directories
 use walkdir::WalkDir;
 /// this is the function that iterate on each directory to retrieve all files of the whole tree
@@ -75,6 +75,12 @@ pub fn trim_quotes_from_path(path: PathBuf) -> PathBuf {
     let path_str = path.to_str().unwrap_or_default(); // Convert PathBuf to a string
     let trimmed_path_str = path_str.trim_matches('"'); // Remove single quotes
     PathBuf::from(trimmed_path_str) // Convert the trimmed string back to a PathBuf
+}
+
+pub fn directory_exists(path: &str) -> bool {
+    fs::metadata(path)
+        .map(|metadata| metadata.is_dir())
+        .unwrap_or(false)
 }
 
 /*

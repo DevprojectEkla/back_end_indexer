@@ -1,7 +1,8 @@
 use crate::types::{IndexDoc, PseudoHash, TermFreq};
+use crate::utils::directory_exists;
 use serde;
 use serde_json;
-use std::{collections::HashMap, fs::File, io::Write, path::PathBuf};
+use std::{collections::HashMap, fs, fs::File, io::Write, path::PathBuf};
 struct Index<K, V> {
     hashmap: HashMap<K, V>,
 }
@@ -57,10 +58,29 @@ where
     //         .collect::<Vec<_>>()
     //         .join(",\n")
     // );
+    //
+    let path_data_dir = "data/";
+    if !directory_exists(&path_data_dir) {
+        match fs::create_dir_all(&path_data_dir) {
+            Ok(()) => println!("Directory {} created successfully", &path_data_dir),
+            Err(err) => {
+                eprintln!("Error creating directory {}", err);
+                return;
+            }
+        }
+    }
+
     let json_format = serde_json::to_string(&data)
         .expect(format!("serialization with serde should work for {name:?}").as_str());
-    let mut json = File::create(format!("data/_index-{name}.json"))
-        .expect("we should be able to create a file on the system");
+    let file_path = format!("{path_data_dir}_index-{name}.json");
+
+    let mut json = match File::create(file_path) {
+        Ok(json) => json,
+        Err(err) => {
+            eprintln!("Error while creating file {}", err);
+            return;
+        }
+    };
     json.write_all(json_format.as_bytes())
         .expect("could write to a simple file")
 }
