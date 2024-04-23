@@ -1,10 +1,10 @@
 use crate::hashmaps::{index_to_json, tf_to_index, tf_to_json};
 use crate::lexer::Lexer;
 use crate::parsers::{check_file_type, send_to_parser};
-use crate::types::{IndexDoc, PseudoHash, SliceChars, SliceContent, TermFreq, TfIdF};
+use crate::types::{FromJson, IndexDoc, PseudoHash, SliceChars, SliceContent, TermFreq, TfIdF};
 use crate::utils::format_size;
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::{cell::RefCell, collections::HashMap, fs::File, io::BufReader, rc::Rc};
 
 ///cette fonction est typiquement appelée avec comme argument walk_dir(path) qui retourne un Vec<String> et permet d'indexer tous les fichiers
 #[derive(Clone, Debug)]
@@ -14,6 +14,27 @@ pub struct Index {
     number_of_documents: usize,
     tf: usize, // tf/idf is the tyical weight calculation for search_engine
     idf: usize,
+}
+
+impl FromJson for Index {
+    type Output = Index;
+    fn from_json(filename: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        // Call from_json for IndexDoc to get the index_doc field
+        let index = IndexDoc::from_json(filename)?;
+        let list_path = vec![];
+        let tf = 0;
+        let idf = 0;
+        let number_of_documents = list_path.len();
+
+        // Create and return an Index instance with the index_doc field initialized
+        Ok(Index {
+            list_path,
+            number_of_documents,
+            index,
+            tf,
+            idf,
+        })
+    }
 }
 impl Index {
     pub fn new(list_path: Vec<String>) -> Self {

@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashMap, path::PathBuf, rc::Rc};
+use std::{cell::RefCell, collections::HashMap, fs::File, io::BufReader, path::PathBuf, rc::Rc};
 
 ///Ces types servent seulement à éviter des répétitions un peu lourde de generic types
 pub type TermFreq = HashMap<String, f32>;
@@ -21,6 +21,21 @@ pub enum SliceContent {
     SliceChars(SliceChars),
     SliceBytes(SliceBytes),
 }
+
+pub trait FromJson {
+    type Output;
+    fn from_json(filename: &str) -> Result<Self::Output, Box<dyn std::error::Error>>;
+}
+impl FromJson for IndexDoc {
+    type Output = IndexDoc;
+    fn from_json(filename: &str) -> Result<Self::Output, Box<dyn std::error::Error>> {
+        let file = File::open(filename)?;
+        let reader = BufReader::new(file);
+        let data: HashMap<PathBuf, TermFreq> = serde_json::from_reader(reader)?;
+        Ok(data)
+    }
+}
+
 impl FromIterator<char> for SliceContent {
     fn from_iter<SliceChars>(iter: SliceChars) -> Self
     where

@@ -7,6 +7,7 @@ pub mod lexer;
 pub mod parsers;
 pub mod types;
 pub mod utils;
+
 use index::Index;
 use utils::walk_dir;
 

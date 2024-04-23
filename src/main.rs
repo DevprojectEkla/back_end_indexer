@@ -7,6 +7,7 @@ mod lexer;
 mod parsers;
 mod types;
 mod utils;
+use crate::types::FromJson;
 use std::io;
 
 use index::Index;
@@ -21,6 +22,10 @@ pub fn main() {
         Err(err) => eprintln!("Error reading path: {}\nError: {}", path_input, err),
     }
     let list_files = walk_dir(&path_input.trim());
+    let index_doc = Index::from_json(&path_input.trim().as_ref());
+    println!("index doc :{:?}", index_doc);
+    let result = index_doc.unwrap().idf_calculation("test");
+    println!("result for 'test':{:?}", result);
 
     let mut index = Index::new(list_files);
 
