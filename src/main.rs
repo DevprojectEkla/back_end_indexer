@@ -7,12 +7,20 @@ mod lexer;
 mod parsers;
 mod types;
 mod utils;
+use std::io;
+
 use index::Index;
 use utils::walk_dir;
 pub fn main() {
     // let content = parse_xml_file("xml/docs.gl/gl4/glActiveShaderProgram.xhtml");
     // println!("{content:?}");
-    let list_files = walk_dir("docs/samples");
+    println!("Please enter a valid path to folder to parse:");
+    let mut path_input = String::new();
+    match io::stdin().read_line(&mut path_input) {
+        Ok(_) => println!("path selected {}:", path_input.trim()),
+        Err(err) => eprintln!("Error reading path: {}\nError: {}", path_input, err),
+    }
+    let list_files = walk_dir(&path_input.trim());
 
     let mut index = Index::new(list_files);
 

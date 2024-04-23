@@ -39,13 +39,19 @@ fn parse_other_files(path: &str) -> SliceContent {
     content
 }
 fn parse_txt_file(path: &str) -> SliceContent {
-    let content = fs::read_to_string(path)
-        .expect(format!("we should be able to open {} as a .txt file", path).as_str());
-    let size = format_size(content.len());
-    let content = content.chars().collect();
-    println!("Parsing TXT file: {path} => size:{size} ...");
-
-    return content;
+    let content = fs::read_to_string(path);
+    match content {
+        Ok(content) => {
+            let size = format_size(content.len());
+            let content = content.chars().collect();
+            println!("Parsing TXT file: {path} => size:{size} ...");
+            return content;
+        }
+        Err(err) => {
+            println!("Error {}", err);
+            return "".chars().collect();
+        }
+    }
 }
 pub fn parse_xml_file(path: &str) -> SliceContent {
     println!("Parsing XML file {path} ...");

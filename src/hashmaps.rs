@@ -15,7 +15,7 @@ pub fn tf_to_index(path: PathBuf, tf: TermFreq, index_doc: &mut IndexDoc) -> &mu
     // let sorted = sort_tf_for_index(tf);
     // println!("{:?}", sorted);
     index_doc.insert(path, tf);
-    println!("{:?}", index_doc);
+    // println!("{:?}", index_doc);
     index_doc
 }
 pub fn index_to_json(index: IndexDoc) {
