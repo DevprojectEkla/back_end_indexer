@@ -22,15 +22,18 @@ pub fn main() {
         Err(err) => eprintln!("Error reading path: {}\nError: {}", path_input, err),
     }
     let list_files = walk_dir(&path_input.trim());
-    let index_doc = Index::from_json(&path_input.trim().as_ref());
-    println!("index doc :{:?}", index_doc);
-    let result = index_doc.unwrap().idf_calculation("test");
-    println!("result for 'test':{:?}", result);
 
     let mut index = Index::new(list_files);
 
     index.index_all();
+    //just testing the from_json function to populate the index_doc attribute
+    //directly with an already existing index. This avoid to reindex each time
+    //we want to search for a term in the same corpus with our client app
+    let index_doc = Index::from_json("data/_index-index.json");
+    println!("index doc :{:?}", index_doc);
+    let result = index_doc.unwrap().idf_calculation("abus");
 
+    println!("result for 'test':{:?}", result);
     // thread::sleep(Duration::from_secs(1));
     // let file = File::open("xml/docs.gl/gl4/glActiveTexture.xhtml").expect("Failed to open file");
     // let file = BufReader::new(file);

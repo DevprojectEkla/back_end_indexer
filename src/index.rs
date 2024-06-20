@@ -19,7 +19,7 @@ pub struct Index {
 impl FromJson for Index {
     type Output = Index;
     fn from_json(filename: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        // Call from_json for IndexDoc to get the index_doc field
+        // Call from_json for IndexDoc to populate the index_doc field
         let index = IndexDoc::from_json(filename)?;
         let list_path = vec![];
         let tf = 0;
